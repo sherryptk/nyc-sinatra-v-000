@@ -1,6 +1,8 @@
 <h1>Update <%= @landmark.name %> </h1>
 
 <form action="/landmarks" method="POST">
+  <input type="hidden" name="_method" value="patch">
+
   <p>Name:</p>
   <input type="text" name="landmark[name]" value="landmark_name" id="name">
   <p>Update Year Completed - <%= @landmark.year_completed.to_s %> </p>
