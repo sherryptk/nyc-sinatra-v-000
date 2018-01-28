@@ -7,28 +7,36 @@ class FiguresController < ApplicationController
   end
 
   post '/figures' do
+    @figure = Figure.create(name: params[:figure][:name])
 
-    @figure = Figure.create(params[:name])
-    slug = @figure.slug
-
-    if !params["figure"]["landmark"].empty?
-      @figure.landmark = Landmark.create(name: params["landmark"]["name"])
+    if !params["landmark"]["name"].empty?
+      @figure.landmarks << Landmark.create(name: params["landmark"]["name"])
     end
 
-    params["landmark"].each do |landmark_id|
-      landmark = Landmark.find(landmark_id.to_i)
-      @figure.landmarks << landmark
+    if params["figure"]["landmark_ids"] != nil
+      params["figure"]["landmark_ids"].each do |landmark_id|
+        @figure.landmarks << Landmark.find(landmark_id.to_i)
+      end
     end
 
-    if !params["figure"]["title"].empty?
-      @figure.title = Title.create(name: params["title"]["name"])
+    if params["title"]["name"] != nil
+      @figure.titles << Title.create(name: params["title"]["name"])
     end
 
-    params["title"].each do |title_id|
+    if params["figure"]["title_ids"] != nil
+    params["figure"]["title_ids"].each do |title_id|
       title = Title.find(title_id.to_i)
       @figure.titles << title
     end
-    redirect to "/figures/#{slug}"
+  end
+
+    @figure.save
+    redirect to "/figures/#{@figure.id}"
+  end
+
+  get '/figures/:id' do
+    @figure = Figure.find(params[:id])
+    erb :'/figures/show'
   end
 
 end
